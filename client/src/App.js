@@ -37,21 +37,15 @@ function App() {
     return (
         <div
             style={{
-                // minHeight: '100vh',
                 minHeight: '100vh',
                 background: 'linear-gradient(135deg, #92b8ffff 0%, #fab1b1ff 100%)',
-                // padding: '32px',
                 fontFamily: 'Inter, Arial, sans-serif',
             }}
         >
             <div
                 style={{
-                    maxWidth: '600px',
-
+                    // maxWidth: '600px',
                     margin: '0 auto',
-                    // background: 'rgba(255,255,255,0.07)',
-                    // borderRadius: '32px',
-                    // boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
                     padding: '32px 0px 0px 0px',
                 }}
             >
@@ -59,41 +53,45 @@ function App() {
                     <LoginButton />
                 ) : (
                     <div>
-                        <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}>
-                            <button
-                                onClick={handleGetTracks}
-                                style={{
-                                    background: '#92b8ffff',
-                                    color: '#1b191bff',
-                                    padding: '12px 24px',
-                                    borderRadius: '999px',
-                                    fontWeight: 700,
-                                    fontSize: '1.1rem',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    transition: 'background 0.2s',
-                                }}
-                            >
-                                <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
-                                Get My Top Tracks (last 4 weeks)
-                            </button>
-                        </div>
+                        {/* <div style={{ display: 'flex', gap: '16px', marginBottom: '24px' }}> */}
+                        <button
+                            onClick={handleGetTracks}
+                            style={{
+                                background: '#92b8ffff',
+                                color: '#1b191bff',
+                                padding: '12px 24px',
+                                borderRadius: '999px',
+                                fontWeight: 700,
+                                fontSize: '1.1rem',
+                                border: '1px solid rgba(27, 25, 27, 0.3)',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s',
+                                margin: '0 auto',
+                                display: 'block',
+                            }}
+                        >
+                            <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
+                            Get My Top Tracks (last 4 weeks)
+                        </button>
+                        {/* </div> */}
 
                         <TrackList tracks={tracks} />
                     </div>
                 )}
             </div>
-            <footer
-                style={{
-                    textAlign: 'center',
-                    fontSize: '0.8rem',
-                    color: 'rgba(0,0,0,0.6)',
-                    padding: '16px',
-                    marginTop: 'auto',
-                }}
-            >
-                2025 • Developed by @XXXX
-            </footer>
+            {tracks.length == 0 && (
+                <footer
+                    style={{
+                        textAlign: 'center',
+                        fontSize: '0.8rem',
+                        color: 'rgba(0,0,0,0.6)',
+                        padding: '16px',
+                        marginTop: 'auto',
+                    }}
+                >
+                    2025 • Developed by @nameless.shelf
+                </footer>
+            )}
         </div>
     );
 }

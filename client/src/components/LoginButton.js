@@ -18,6 +18,7 @@ export default function LoginButton() {
                 border: 'none',
                 cursor: 'pointer',
                 transition: 'background 0.2s',
+                border: '1px solid rgba(27, 25, 27, 0.3)',
                 margin: '0 auto',
                 display: 'block',
             }}
