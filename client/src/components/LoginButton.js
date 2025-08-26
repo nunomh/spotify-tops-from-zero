@@ -2,7 +2,11 @@ import React from 'react';
 
 export default function LoginButton() {
     const login = () => {
-        window.location.href = 'http://localhost:5000/login';
+        const url =
+            process.env.NODE_ENV === 'production'
+                ? 'https://spotify-top-api.onrender.com/login'
+                : 'http://localhost:5000/login';
+        window.location.href = url;
     };
 
     return (
