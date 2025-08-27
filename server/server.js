@@ -15,7 +15,13 @@ const spotifyApi = new SpotifyWebApi({
 
 // Step 1. Login route
 app.get('/login', (req, res) => {
-    const scopes = ['user-top-read'];
+    const scopes = [
+        'user-top-read',
+        // 'user-read-private', // Read user profile
+        // 'user-read-email', // Read user email
+        'user-library-read', // Read user's library
+        'user-read-recently-played', // Fallback option
+    ];
     const authorizeURL = spotifyApi.createAuthorizeURL(scopes, null, true); // third parameter forces dialog
     res.redirect(authorizeURL);
 });
@@ -37,18 +43,70 @@ app.get('/callback', async (req, res) => {
     }
 });
 
-// Step 3. Get top tracks endpoint
 app.get('/top-tracks', async (req, res) => {
-    const token = req.query.access_token; // frontend sends it
+    const token = req.query.access_token;
+    const timeRange = req.query.time_range || 'short_term';
+
     if (!token) return res.status(400).send('No token provided');
 
     spotifyApi.setAccessToken(token);
     try {
-        const data = await spotifyApi.getMyTopTracks({ limit: 10, time_range: 'short_term' });
+        const data = await spotifyApi.getMyTopTracks({
+            limit: 10,
+            time_range: timeRange,
+        });
+        console.log(`Success (${timeRange}): Found`, data.body.items.length, 'tracks');
         res.json(data.body.items);
     } catch (err) {
-        console.error(err);
-        res.status(500).send('Error fetching top tracks');
+        console.error('Full error object:', JSON.stringify(err, null, 2));
+        console.error('Error message:', err.message);
+        console.error('Status code:', err.statusCode);
+
+        // Handle specific 403 case
+        if (err.statusCode === 403) {
+            res.status(403).json({
+                error: 'Insufficient permissions or no listening history available',
+                suggestion:
+                    'This account may not have enough Spotify listening history, or needs additional permissions.',
+            });
+        } else {
+            res.status(err.statusCode || 500).json({
+                error: err.message || 'Unknown error',
+                statusCode: err.statusCode,
+            });
+        }
+    }
+});
+
+// Fallback: Get recently played tracks
+app.get('/recently-played', async (req, res) => {
+    const token = req.query.access_token;
+    if (!token) return res.status(400).send('No token provided');
+
+    spotifyApi.setAccessToken(token);
+    try {
+        const data = await spotifyApi.getMyRecentlyPlayedTracks({ limit: 10 });
+        console.log('Recently played tracks:', data.body.items.length);
+        res.json(data.body.items.map(item => item.track)); // Extract just the track info
+    } catch (err) {
+        console.error('Recently played error:', err);
+        res.status(err.statusCode || 500).json({ error: err.message });
+    }
+});
+
+// Check user profile
+app.get('/user-profile', async (req, res) => {
+    const token = req.query.access_token;
+    if (!token) return res.status(400).send('No token provided');
+
+    spotifyApi.setAccessToken(token);
+    try {
+        const data = await spotifyApi.getMe();
+        console.log('User profile:', data.body);
+        res.json(data.body);
+    } catch (err) {
+        console.error('Profile error:', err);
+        res.status(err.statusCode || 500).json({ error: err.message });
     }
 });
 
