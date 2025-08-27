@@ -56,7 +56,7 @@ export default function TrackList({ tracks }) {
                         marginTop: 'auto',
                     }}
                 >
-                    2025 • Developed by @nameless.shelf
+                    2025 • made by @nameless.shelf
                 </footer>
             </div>
         </div>

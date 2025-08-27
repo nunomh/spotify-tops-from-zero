@@ -16,7 +16,7 @@ const spotifyApi = new SpotifyWebApi({
 // Step 1. Login route
 app.get('/login', (req, res) => {
     const scopes = ['user-top-read'];
-    const authorizeURL = spotifyApi.createAuthorizeURL(scopes);
+    const authorizeURL = spotifyApi.createAuthorizeURL(scopes, null, true); // third parameter forces dialog
     res.redirect(authorizeURL);
 });
 
