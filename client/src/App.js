@@ -83,7 +83,7 @@ function App() {
             // First try top tracks with different time ranges
             let data = null;
             let time_range = '';
-            const timeRanges = ['medium_term', 'long_term', 'short_term'];
+            const timeRanges = ['short_term', 'medium_term', 'long_term'];
 
             for (const range of timeRanges) {
                 try {
