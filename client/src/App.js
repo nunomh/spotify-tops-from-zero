@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import html2canvas from 'html2canvas';
-import { fetchTopTracks, fetchRecentlyPlayed, fetchUserProfile } from './api';
+import { fetchTopTracks, fetchRecentlyPlayed, fetchUserProfile, fetchCreatePlaylist } from './api';
 import LoginButton from './components/LoginButton';
 import TrackList from './components/TrackList';
 
@@ -122,6 +122,32 @@ function App() {
         }
     };
 
+    const handleCreatePlaylist = async () => {
+        if (!accessToken) return;
+
+        try {
+            let data = null;
+            const timeRanges = ['short_term', 'medium_term', 'long_term'];
+
+            for (const range of timeRanges) {
+                try {
+                    data = await fetchCreatePlaylist(accessToken, range);
+                    if (data && data.playlistId) {
+                        console.log(`Success with ${range} time range`);
+                        setPopup('Playlist created successfully!');
+                        return;
+                    }
+                } catch (err) {
+                    console.log(`${range} failed:`, err.message);
+                    continue;
+                }
+            }
+        } catch (err) {
+            console.error('All methods failed:', err);
+            setPopup('This account may not have enough listening history. Try playing some music on Spotify first!');
+        }
+    };
+
     const handleLogout = () => {
         setAccessToken(null);
         setTracks([]);
@@ -166,6 +192,27 @@ function App() {
                             <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
                             Get My Top Tracks (last 4 weeks)
                         </button>
+
+                        <button
+                            onClick={handleCreatePlaylist}
+                            style={{
+                                background: '#92b8ffff',
+                                color: '#1b191bff',
+                                padding: '12px 24px',
+                                borderRadius: '999px',
+                                fontWeight: 700,
+                                fontSize: '1.1rem',
+                                border: '1px solid rgba(27, 25, 27, 0.3)',
+                                cursor: 'pointer',
+                                transition: 'background 0.2s',
+                                margin: '16px auto',
+                                display: 'block',
+                            }}
+                        >
+                            <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
+                            Create Playlist with My Top Tracks
+                        </button>
+
                         <TrackList tracks={tracks} />
                     </div>
                 )}

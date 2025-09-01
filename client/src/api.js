@@ -15,6 +15,26 @@ export const fetchTopTracks = async (accessToken, timeRange = 'short_term') => {
     return response.json();
 };
 
+// Create Playlist (POST)
+export const fetchCreatePlaylist = async (accessToken, timeRange = 'short_term') => {
+    const response = await fetch(`${API_BASE}/create-playlist`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ access_token: accessToken, time_range: timeRange }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error(`API Error: ${errorData.error || 'Unknown error'}`);
+        error.statusCode = response.status;
+        throw error;
+    }
+
+    return response.json();
+};
+
 // Add other API functions if you have them
 export const fetchRecentlyPlayed = async accessToken => {
     const response = await fetch(`${API_BASE}/recently-played?access_token=${accessToken}`);

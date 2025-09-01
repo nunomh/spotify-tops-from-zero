@@ -6,6 +6,7 @@ const SpotifyWebApi = require('spotify-web-api-node');
 dotenv.config();
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 const spotifyApi = new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
@@ -17,10 +18,10 @@ const spotifyApi = new SpotifyWebApi({
 app.get('/login', (req, res) => {
     const scopes = [
         'user-top-read',
-        // 'user-read-private', // Read user profile
-        // 'user-read-email', // Read user email
-        'user-library-read', // Read user's library
-        'user-read-recently-played', // Fallback option
+        'user-library-read',
+        'user-read-recently-played',
+        'playlist-modify-private', // <-- Add this
+        // 'playlist-modify-public', // <-- Optional, for public playlists
     ];
     const authorizeURL = spotifyApi.createAuthorizeURL(scopes, null, true); // third parameter forces dialog
     res.redirect(authorizeURL);
@@ -107,6 +108,61 @@ app.get('/user-profile', async (req, res) => {
     } catch (err) {
         console.error('Profile error:', err);
         res.status(err.statusCode || 500).json({ error: err.message });
+    }
+});
+
+app.post('/create-playlist', async (req, res) => {
+    const token = req.body?.access_token;
+    const timeRange = req.body?.time_range || 'short_term';
+
+    if (!token) return res.status(400).send('No token provided');
+
+    spotifyApi.setAccessToken(token);
+
+    try {
+        // Get top tracks
+        const topTracksData = await spotifyApi.getMyTopTracks({
+            limit: 20,
+            time_range: timeRange,
+        });
+        const trackUris = topTracksData.body.items.map(track => track.uri);
+
+        // Create a new playlist (v5+)
+        const playlistData = await spotifyApi.createPlaylist(
+            `Top Songs ${new Intl.DateTimeFormat('en-US', { month: 'long' }).format(
+                new Date()
+            )} ${new Date().getFullYear()}`,
+            {
+                description: `My top 20 most played songs of ${new Intl.DateTimeFormat('en-US', {
+                    month: 'long',
+                }).format(new Date())} ${new Date().getFullYear()}`,
+                public: false,
+            }
+        );
+
+        // Add tracks to playlist
+        await spotifyApi.addTracksToPlaylist(playlistData.body.id, trackUris);
+
+        res.json({
+            playlistId: playlistData.body.id,
+            playlistUrl: playlistData.body.external_urls.spotify,
+            name: playlistData.body.name,
+        });
+    } catch (err) {
+        console.error('Create playlist error:', err);
+
+        if (err.statusCode === 403) {
+            res.status(403).json({
+                error: 'Insufficient permissions or no listening history available',
+                suggestion:
+                    'This account may not have enough Spotify listening history, or needs additional permissions.',
+            });
+        } else {
+            res.status(err.statusCode || 500).json({
+                error: err.message || 'Unknown error',
+                statusCode: err.statusCode || 500,
+            });
+        }
     }
 });
 
