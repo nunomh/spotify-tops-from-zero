@@ -50,7 +50,7 @@ function Popup({ message, onClose }) {
 }
 
 function App() {
-    const [accessToken, setAccessToken] = useState(null);
+    const [accessToken, setAccessToken] = useState(() => localStorage.getItem('access_token'));
     const [tracks, setTracks] = useState([]);
     const [popup, setPopup] = useState('');
     const imageRef = useRef();
@@ -62,19 +62,29 @@ function App() {
 
         if (token) {
             setAccessToken(token);
-            // Store expiry time
-            const expiryTime = Date.now() + parseInt(expiresIn) * 1000;
-            localStorage.setItem('token_expiry', expiryTime.toString());
-            window.history.pushState({}, null, '/');
+            localStorage.setItem('access_token', token);
+            if (expiresIn) {
+                const expiryTime = Date.now() + parseInt(expiresIn) * 1000;
+                localStorage.setItem('token_expiry', expiryTime.toString());
+            }
+            window.history.replaceState({}, null, '/');
         } else {
-            // Check if existing token has expired
+            // Check expiry
             const expiryTime = localStorage.getItem('token_expiry');
             if (expiryTime && Date.now() > parseInt(expiryTime)) {
                 setAccessToken(null);
+                localStorage.removeItem('access_token');
                 localStorage.removeItem('token_expiry');
             }
         }
     }, []);
+
+    const handleLogout = () => {
+        setAccessToken(null);
+        setTracks([]);
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('token_expiry');
+    };
 
     const handleGetTracks = async () => {
         if (!accessToken) return;
@@ -148,11 +158,11 @@ function App() {
         }
     };
 
-    const handleLogout = () => {
-        setAccessToken(null);
-        setTracks([]);
-        localStorage.removeItem('token_expiry');
-    };
+    // const handleLogout = () => {
+    //     setAccessToken(null);
+    //     setTracks([]);
+    //     localStorage.removeItem('token_expiry');
+    // };
 
     return (
         <div
@@ -163,56 +173,75 @@ function App() {
             }}
         >
             <Popup message={popup} onClose={() => setPopup('')} />
-            <div
-                style={{
-                    margin: '0 auto',
-                    padding: '32px 0px 0px 0px',
-                }}
-            >
+            <div style={{ margin: '0 auto', padding: '32px 0px 0px 0px' }}>
                 {!accessToken ? (
                     <LoginButton />
                 ) : (
                     <div>
-                        <button
-                            onClick={handleGetTracks}
+                        <div
                             style={{
-                                background: '#92b8ffff',
-                                color: '#1b191bff',
-                                padding: '12px 24px',
-                                borderRadius: '999px',
-                                fontWeight: 700,
-                                fontSize: '1.1rem',
-                                border: '1px solid rgba(27, 25, 27, 0.3)',
-                                cursor: 'pointer',
-                                transition: 'background 0.2s',
-                                margin: '0 auto',
-                                display: 'block',
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '16px',
+                                justifyContent: 'center',
+                                marginBottom: '16px',
                             }}
                         >
-                            <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
-                            Get My Top Tracks (last 4 weeks)
-                        </button>
+                            <button
+                                onClick={handleGetTracks}
+                                style={{
+                                    background: '#92b8ffff',
+                                    color: '#1b191bff',
+                                    padding: '12px 24px',
+                                    borderRadius: '999px',
+                                    fontWeight: 700,
+                                    fontSize: '1.1rem',
+                                    border: '1px solid rgba(27, 25, 27, 0.3)',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                    display: 'inline-block',
+                                }}
+                            >
+                                <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
+                                Get My Top Tracks (last 4 weeks)
+                            </button>
 
-                        <button
-                            onClick={handleCreatePlaylist}
-                            style={{
-                                background: '#92b8ffff',
-                                color: '#1b191bff',
-                                padding: '12px 24px',
-                                borderRadius: '999px',
-                                fontWeight: 700,
-                                fontSize: '1.1rem',
-                                border: '1px solid rgba(27, 25, 27, 0.3)',
-                                cursor: 'pointer',
-                                transition: 'background 0.2s',
-                                margin: '16px auto',
-                                display: 'block',
-                            }}
-                        >
-                            <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
-                            Create Playlist with My Top Tracks
-                        </button>
+                            <button
+                                onClick={handleCreatePlaylist}
+                                style={{
+                                    background: '#92b8ffff',
+                                    color: '#1b191bff',
+                                    padding: '12px 24px',
+                                    borderRadius: '999px',
+                                    fontWeight: 700,
+                                    fontSize: '1.1rem',
+                                    border: '1px solid rgba(27, 25, 27, 0.3)',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.2s',
+                                    display: 'inline-block',
+                                }}
+                            >
+                                <span style={{ marginRight: '8px', fontWeight: 900 }}>🎵</span>
+                                Create Playlist with My Top Tracks
+                            </button>
 
+                            <button
+                                onClick={handleLogout}
+                                style={{
+                                    background: '#191414',
+                                    color: '#fff',
+                                    padding: '10px 22px',
+                                    borderRadius: '999px',
+                                    fontWeight: 700,
+                                    fontSize: '1rem',
+                                    border: '1px solid #1db954',
+                                    cursor: 'pointer',
+                                    display: 'inline-block',
+                                }}
+                            >
+                                Logout
+                            </button>
+                        </div>
                         <TrackList tracks={tracks} />
                     </div>
                 )}
@@ -227,7 +256,7 @@ function App() {
                         marginTop: 'auto',
                     }}
                 >
-                    2025 • made by @nameless.shelf • v0.0.2
+                    2025 • made by @nameless.shelf • v0.0.3
                 </footer>
             )}
         </div>

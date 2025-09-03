@@ -23,7 +23,8 @@ app.get('/login', (req, res) => {
         'playlist-modify-private', // <-- Add this
         // 'playlist-modify-public', // <-- Optional, for public playlists
     ];
-    const authorizeURL = spotifyApi.createAuthorizeURL(scopes, null, true); // third parameter forces dialog
+    const state = 'login_flow';
+    const authorizeURL = spotifyApi.createAuthorizeURL(scopes, state, true); // third parameter forces dialog
     res.redirect(authorizeURL);
 });
 
