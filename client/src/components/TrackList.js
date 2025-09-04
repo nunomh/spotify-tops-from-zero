@@ -35,9 +35,9 @@ export default function TrackList({ tracks }) {
                 <h2
                     style={{
                         color: '#1b191bff',
-                        fontSize: 'clamp(1.2rem, 2vw, 1.5rem)',
+                        fontSize: 'clamp(1.4rem, 2vw, 1.5rem)',
                         fontWeight: 700,
-                        margin: '20px 0 4px 20px',
+                        margin: '40px 0 4px 35px',
                     }}
                 >
                     My Spotify Top Tracks
@@ -45,9 +45,9 @@ export default function TrackList({ tracks }) {
                 <h3
                     style={{
                         color: '#3f3f3fff',
-                        fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
+                        fontSize: 'clamp(1.1rem, 1.5vw, 1.1rem)',
                         fontWeight: 700,
-                        margin: '0 0 16px 20px',
+                        margin: '0 0 16px 35px',
                     }}
                 >
                     Last Month
@@ -61,7 +61,7 @@ export default function TrackList({ tracks }) {
                         padding: '0 12px 0 12px',
                         justifyContent: 'center',
                         overflow: 'auto', // allow scrolling if needed
-                        maxHeight: 'calc(100vh - 180px)', // adjust for header/footer
+                        maxHeight: 'calc(100vh - 140px)', // adjust for header/footer
                     }}
                 >
                     {tracks.slice(0, 10).map((track, index) => (
@@ -70,7 +70,7 @@ export default function TrackList({ tracks }) {
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: 'clamp(8px, 1vw, 16px)',
+                                gap: 'clamp(16px, 1vw, 16px)',
                                 borderRadius: 'clamp(12px, 2vw, 20px)',
                                 padding: 'clamp(2px, 1vw, 6px) clamp(4px, 1vw, 8px)',
                                 margin: '0 clamp(4px, 2vw, 4px)',
@@ -83,7 +83,7 @@ export default function TrackList({ tracks }) {
                         >
                             <div
                                 style={{
-                                    fontSize: 'clamp(0.9rem, 2vw, 1.3rem)',
+                                    fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
                                     fontWeight: 700,
                                     width: 'clamp(24px, 4vw, 40px)',
                                     textAlign: 'right',
@@ -97,8 +97,8 @@ export default function TrackList({ tracks }) {
                                 src={track.album.images[0]?.url}
                                 alt={track.name}
                                 style={{
-                                    width: 'clamp(40px, 8vw, 72px)', // larger image
-                                    height: 'clamp(40px, 8vw, 72px)', // larger image
+                                    width: 'clamp(28px, 12vw, 50px)',
+                                    height: 'clamp(28px, 12vw, 50px)',
                                     objectFit: 'cover',
                                     borderRadius: 'clamp(6px, 1vw, 12px)',
                                     boxShadow: 'none',
@@ -114,25 +114,27 @@ export default function TrackList({ tracks }) {
                             >
                                 <span
                                     style={{
-                                        fontSize: 'clamp(1rem, 2vw, 1.3rem)', // a bit smaller
+                                        fontSize: 'clamp(0.9rem, 2vw, 1.2rem)',
                                         fontWeight: 600,
                                         marginBottom: 'clamp(2px, 0.5vw, 6px)',
                                         color: '#1b191bff',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
+                                        whiteSpace: 'normal', // allow wrapping
+                                        wordBreak: 'break-word', // break long names
                                     }}
                                 >
                                     {track.name}
                                 </span>
                                 <span
                                     style={{
-                                        fontSize: 'clamp(0.85rem, 1.5vw, 1rem)', // a bit smaller
+                                        fontSize: 'clamp(0.8rem, 1.5vw, 1rem)',
                                         opacity: 0.85,
                                         color: '#1b191bff',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
+                                        whiteSpace: 'normal',
+                                        wordBreak: 'break-word',
                                     }}
                                 >
                                     {track.artists.map(a => a.name).join(', ')}
