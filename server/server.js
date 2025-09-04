@@ -35,10 +35,23 @@ app.get('/auth/callback', async (req, res) => {
         const data = await spotifyApi.authorizationCodeGrant(code);
         const { access_token, refresh_token, expires_in } = data.body;
 
-        // Redirect to frontend with tokens in query (simplest way)
-        res.redirect(
-            `${process.env.FRONTEND_URI}/?access_token=${access_token}&refresh_token=${refresh_token}&expires_in=${expires_in}`
-        );
+        // Render a small HTML page with tokens in query params
+        res.send(`
+      <html>
+        <body>
+          <script>
+            // Build query params from backend
+            const params = new URLSearchParams({
+              access_token: "${access_token}",
+              refresh_token: "${refresh_token}",
+              expires_in: "${expires_in}"
+            });
+            // Redirect to frontend using hash (#) instead of ?
+            window.location.href = "${process.env.FRONTEND_URI}/#" + params.toString();
+          </script>
+        </body>
+      </html>
+    `);
     } catch (err) {
         console.error(err);
         res.send('Error during authentication');
