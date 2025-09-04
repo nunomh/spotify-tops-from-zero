@@ -256,7 +256,7 @@ function App() {
                         marginTop: 'auto',
                     }}
                 >
-                    2025 • made by @nameless.shelf • v0.0.3
+                    2025 • made by @nameless.shelf • v0.0.4
                 </footer>
             )}
         </div>

@@ -29,7 +29,7 @@ app.get('/login', (req, res) => {
 });
 
 // Step 2. Callback route
-app.get('/callback', async (req, res) => {
+app.get('/auth/callback', async (req, res) => {
     const code = req.query.code || null;
     try {
         const data = await spotifyApi.authorizationCodeGrant(code);
