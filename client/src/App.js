@@ -56,16 +56,9 @@ function App() {
     const imageRef = useRef();
 
     useEffect(() => {
-        // Parse from query (?foo=bar)
         const query = new URLSearchParams(window.location.search);
-        const searchToken = query.get('access_token');
-
-        // Parse from hash (#foo=bar)
-        const hash = new URLSearchParams(window.location.hash.substring(1));
-        const hashToken = hash.get('access_token');
-
-        const token = searchToken || hashToken;
-        const expiresIn = query.get('expires_in') || hash.get('expires_in');
+        const token = query.get('access_token');
+        const expiresIn = query.get('expires_in');
 
         if (token) {
             setAccessToken(token);
@@ -74,7 +67,6 @@ function App() {
                 const expiryTime = Date.now() + parseInt(expiresIn) * 1000;
                 localStorage.setItem('token_expiry', expiryTime.toString());
             }
-            // Clean up URL so tokens aren’t visible
             window.history.replaceState({}, null, '/');
         } else {
             // Check expiry
@@ -264,7 +256,7 @@ function App() {
                         marginTop: 'auto',
                     }}
                 >
-                    2025 • made by @nameless.shelf • v0.0.5
+                    2025 • made by @nameless.shelf • v0.0.6
                 </footer>
             )}
         </div>
